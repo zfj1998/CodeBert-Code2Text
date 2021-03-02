@@ -196,6 +196,8 @@ def main():
                         help="Whether to run eval on the dev set.")
     parser.add_argument("--do_lower_case", action='store_true',
                         help="Set this flag if you are using an uncased model.")
+    parser.add_argument("--cuda_devices", default='0,1', type=str,
+                        help="Set ids for available cuda devices")
     parser.add_argument("--no_cuda", action='store_true',
                         help="Avoid using CUDA when available") 
     
@@ -234,6 +236,7 @@ def main():
     logger.info(args)
 
     # Setup CUDA, GPU & distributed training
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.cuda_devices
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = torch.cuda.device_count()
