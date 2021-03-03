@@ -3,3 +3,4 @@ dataset/
 model/
 __pycache__/
 nohup.out
+logs/
