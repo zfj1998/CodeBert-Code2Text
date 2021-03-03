@@ -1,2 +1,5 @@
 dataset/
 .vscode
+model/
+__pycache__/
+nohup.out
