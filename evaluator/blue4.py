@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 '''
-This script was adapted from the original version by hieuhoang1972 which is part of MOSES. 
+This script was adapted from the original version by hieuhoang1972 which is part of MOSES.
 '''
 
 # $Id: bleu.py 1307 2007-03-14 22:22:36Z hieuhoang1972 $
@@ -74,7 +74,7 @@ def cook_refs(refs, n=4):
     '''Takes a list of reference sentences for a single segment
     and returns an object that encapsulates everything that BLEU
     needs to know about them.'''
-    
+
     refs = [normalize(ref) for ref in refs]
     maxcounts = {}
     for ref in refs:
@@ -92,7 +92,7 @@ def cook_test(test, item, n=4):
     result["testlen"] = len(test)
 
     # Calculate effective reference sentence length.
-    
+
     if eff_ref_len == "shortest":
         result["reflen"] = min(reflens)
     elif eff_ref_len == "average":
@@ -154,24 +154,33 @@ def splitPuncts(line):
   return ' '.join(re.findall(r"[\w]+|[^\s\w]", line))
 
 def computeMaps(predictions, goldfile):
+  '''
+  如下行格式均可:
+    行格式 {idx}\t{splitted content}
+    行格式 {splitted content}
+  '''
   predictionMap = {}
   goldMap = {}
   gf = open(goldfile, 'r')
 
-  for row in predictions:
+  for row_no, row in enumerate(predictions):
     cols = row.strip().split('\t')
     if len(cols) == 1:
-      (rid, pred) = (cols[0], '') 
+      (rid, pred) = (row_no, cols[0])
     else:
-      (rid, pred) = (cols[0], cols[1]) 
+      (rid, pred) = (cols[0], cols[1])
     predictionMap[rid] = [splitPuncts(pred.strip().lower())]
 
-  for row in gf:
-    (rid, pred) = row.split('\t') 
+  for row_no, row in enumerate(gf):
+    cols = row.strip().split('\t')
+    if len(cols) == 1:
+      (rid, gold) = (row_no, cols[0])
+    else:
+      (rid, gold) = (cols[0], cols[1])
     if rid in predictionMap: # Only insert if the id exists for the method
       if rid not in goldMap:
         goldMap[rid] = []
-      goldMap[rid].append(splitPuncts(pred.strip().lower()))
+      goldMap[rid].append(splitPuncts(gold.strip().lower()))
 
   sys.stderr.write('Total: ' + str(len(goldMap)) + '\n')
   return (goldMap, predictionMap)
@@ -191,11 +200,15 @@ def bleuFromMaps(m1, m2):
   return [s * 100.0 / num for s in score]
 
 if __name__ == '__main__':
+  '''
+  源数据放第一个参数
+  预测数据放第二个参数
+  '''
   reference_file = sys.argv[1]
   prediction_file = sys.argv[2]
   predictions = []
   with open(prediction_file, 'r') as f:
     predictions = f.readlines()
-  (goldMap, predictionMap) = computeMaps(predictions, reference_file) 
+  (goldMap, predictionMap) = computeMaps(predictions, reference_file)
   print (bleuFromMaps(goldMap, predictionMap)[0])
 
