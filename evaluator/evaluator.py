@@ -192,9 +192,10 @@ def bleuFromMaps(m1, m2):
 
 if __name__ == '__main__':
   reference_file = sys.argv[1]
+  prediction_file = sys.argv[2]
   predictions = []
-  for row in sys.stdin:
-    predictions.append(row)
+  with open(prediction_file, 'r') as f:
+    predictions = f.readlines()
   (goldMap, predictionMap) = computeMaps(predictions, reference_file) 
   print (bleuFromMaps(goldMap, predictionMap)[0])
 
