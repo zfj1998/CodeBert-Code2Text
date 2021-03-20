@@ -231,6 +231,7 @@ def main():
                         help="For distributed training: local_rank")   
     parser.add_argument('--seed', type=int, default=42,
                         help="random seed for initialization")
+    parser.add_argument('--transformer_layers', default=6, type=int, help="the number of transformer decoder layers")
     # print arguments
     args = parser.parse_args()
     logger.info(args)
@@ -261,7 +262,7 @@ def main():
     #budild model
     encoder = model_class.from_pretrained(args.model_name_or_path,config=config)    
     decoder_layer = nn.TransformerDecoderLayer(d_model=config.hidden_size, nhead=config.num_attention_heads)
-    decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
+    decoder = nn.TransformerDecoder(decoder_layer, num_layers=args.transformer_layers)
     model=Seq2Seq(encoder=encoder,decoder=decoder,config=config,
                   beam_size=args.beam_size,max_length=args.max_target_length,
                   sos_id=tokenizer.cls_token_id,eos_id=tokenizer.sep_token_id)
