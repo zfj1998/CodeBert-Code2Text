@@ -458,14 +458,14 @@ def main():
 
                 (goldMap, predictionMap) = bleu.computeMaps(predictions, os.path.join(args.output_dir, "dev.gold")) 
                 dev_bleu=round(bleu.bleuFromMaps(goldMap, predictionMap)[0],2)
-                logger.info("  %s = %s "%("bleu-4",str(dev_bleu)))
+                logger.info("  %s = %s "%("rouge",str(dev_bleu)))
                 logger.info("  "+"*"*20)    
                 if dev_bleu>best_bleu:
-                    logger.info("  Best bleu:%s",dev_bleu)
+                    logger.info("  Best rouge:%s",dev_bleu)
                     logger.info("  "+"*"*20)
                     best_bleu=dev_bleu
                     # Save best checkpoint for best bleu
-                    output_dir = os.path.join(args.output_dir, 'checkpoint-best-bleu')
+                    output_dir = os.path.join(args.output_dir, 'checkpoint-best-rouge')
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
                     model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
@@ -514,7 +514,7 @@ def main():
 
             (goldMap, predictionMap) = bleu.computeMaps(predictions, os.path.join(args.output_dir, "test_{}.gold".format(idx))) 
             dev_bleu=round(bleu.bleuFromMaps(goldMap, predictionMap)[0],2)
-            logger.info("  %s = %s "%("bleu-4",str(dev_bleu)))
+            logger.info("  %s = %s "%("rouge",str(dev_bleu)))
             logger.info("  "+"*"*20)    
 
 if __name__ == "__main__":

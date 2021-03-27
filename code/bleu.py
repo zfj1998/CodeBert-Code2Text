@@ -20,6 +20,7 @@ The reason for breaking the BLEU computation into three phases cook_refs(), cook
 import sys, math, re, xml.sax.saxutils
 import subprocess
 import os
+from rouge import Rouge
 
 # Added to bypass NIST-style pre-processing of hyp and ref files -- wade
 nonorm = 0
@@ -179,22 +180,44 @@ def computeMaps(predictions, goldfile):
 
 #m1 is the reference map
 #m2 is the prediction map
-def bleuFromMaps(m1, m2):
-  score = [0] * 5
-  num = 0.0
+# def bleuFromMaps(m1, m2):
+#   score = [0] * 5
+#   num = 0.0
 
-  for key in m1:
-    if key in m2:
-      bl = bleu(m1[key], m2[key][0])
-      score = [ score[i] + bl[i] for i in range(0, len(bl))]
-      num += 1
-  return [s * 100.0 / num for s in score]
+#   for key in m1:
+#     if key in m2:
+#       bl = bleu(m1[key], m2[key][0])
+#       score = [ score[i] + bl[i] for i in range(0, len(bl))]
+#       num += 1
+#   return [s * 100.0 / num for s in score]
+
+def bleuFromMaps(references, hypotheses):
+  '''
+  return [avg_score]
+  '''
+  rouge = Rouge()
+  hyps = []
+  refs = []
+  for key in list(hypotheses.keys()):
+      hyps.append(hypotheses[key][0])
+      refs.append(references[key][0])
+  scores = rouge.get_scores(hyps, refs, avg=True)
+  rouge1_f = scores['rouge-1']['f']
+  rouge2_f = scores['rouge-2']['f']
+  rougeL_f = scores['rouge-l']['f']
+  avg_f = 0.2*rouge1_f + 0.3*rouge2_f + 0.5*rougeL_f
+  return [avg_f]
 
 if __name__ == '__main__':
+  '''
+  源数据放第一个参数
+  预测数据放第二个参数
+  '''
   reference_file = sys.argv[1]
+  prediction_file = sys.argv[2]
   predictions = []
-  for row in sys.stdin:
-    predictions.append(row)
-  (goldMap, predictionMap) = computeMaps(predictions, reference_file) 
+  with open(prediction_file, 'r') as f:
+    predictions = f.readlines()
+  (goldMap, predictionMap) = computeMaps(predictions, reference_file)
   print (bleuFromMaps(goldMap, predictionMap)[0])
 
