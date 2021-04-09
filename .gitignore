@@ -7,3 +7,4 @@ logs/
 *.sh
 *.log
 *.ps1
+scripts/
