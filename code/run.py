@@ -372,6 +372,7 @@ def main():
                 eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
 
                 logger.info("\n***** Running evaluation *****")
+                logger.info("  epoch = %d", epoch)
                 logger.info("  Num examples = %d", len(eval_examples))
                 logger.info("  Batch size = %d", args.eval_batch_size)
 
