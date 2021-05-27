@@ -38,8 +38,10 @@ from tqdm import tqdm, trange
 from torch.utils.data import DataLoader, Dataset, SequentialSampler, RandomSampler,TensorDataset
 from torch.utils.data.distributed import DistributedSampler
 from transformers import (WEIGHTS_NAME, AdamW, get_linear_schedule_with_warmup,
-                          RobertaConfig, RobertaModel, RobertaTokenizer)
-MODEL_CLASSES = {'roberta': (RobertaConfig, RobertaModel, RobertaTokenizer)}
+                          RobertaConfig, RobertaModel, RobertaTokenizer,
+                          AutoConfig, AutoModel, AutoTokenizer)
+MODEL_CLASSES = {'roberta': (RobertaConfig, RobertaModel, RobertaTokenizer),
+                'bert': (AutoConfig, AutoModel, AutoTokenizer)}
 
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
